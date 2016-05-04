@@ -13,34 +13,77 @@ import java.util.concurrent.*;
 public class Node extends UnicastRemoteObject implements ChordInterface
 {
 
-	/*Start Chord functions*/
 
+	public int predecessorId;
+	public int successorId;
+
+	public ConcurrentHashMap<Integer,Integer> fingerTable;
+	public ArrayList<String> fileList;
+
+	public ArrayList<Integer> successorList;
+	public ArrayList<Integer> fingerList; // 0 contains self, 1- immediate 2,3 .. next entries.
+
+	public int myId;
+	public static final int rmiRegistryPort = 5000;
+	public ChordInterface firstNode;
+	public Thread stabilizeThread;
+	public Thread fixFingersThread;
+
+
+
+	/*Start Chord functions*/
 	public void create() throws RemoteException
 	{
 
 		this.predecessorId = -1;
 		this.successorId = myId;
-
 		System.out.println("Chord Ring created");
-
+		fingerTable.put(0,myId);
+		fingerList.add(0,myId);
+		stabilizeThread.start();
 	}
+
 	public void join(ChordInterface anotherNode) throws RemoteException
 	{
 		System.out.println("Join called!");
 		this.predecessorId = -1;
 		System.out.println(anotherNode.getSuccessorId());
 		this.successorId = anotherNode.findSuccessor(this.myId);
-		System.out.println("Join:"+ this.successorId);
 
+		System.out.println("My Successor through join is:" + this.successorId);
+		//notify the node that this is the predecessor.
+		this.fingerTable.put(0,myId);
+		this.fingerList.add(0,myId);
+		this.fingerList.add(1,successorId);
+
+		anotherNode.notify(this);
+
+		stabilizeThread.start();
 	}
-	public void notify(Node node) throws RemoteException
+
+	public void notify(ChordInterface possiblePredecessorNode) throws RemoteException
 	{
+		System.out.println("notify node called by" + possiblePredecessorNode.getId());
+
+		if( predecessorId == -1 )
+		{
+			predecessorId = possiblePredecessorNode.getId();
+			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
+		}
+		else if( possiblePredecessorNode.getId() > this.predecessorId && possiblePredecessorNode.getId()  < this.myId )
+		{
+			predecessorId = possiblePredecessorNode.getId();
+			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
+		}
+		else if(possiblePredecessorNode.getId() > this.myId && possiblePredecessorNode.getId() > this.successorId)
+		{
+			predecessorId = possiblePredecessorNode.getId();
+			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
+		}
 
 	}
-	public void fixFingers() throws RemoteException
-	{
 
-	}
+	
 	public void checkPredecessor() throws RemoteException
 	{
 
@@ -53,17 +96,70 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 	public int findSuccessor(int key) throws RemoteException
 	{
+		System.out.println("finding successor for:" + key);
+		System.out.println("my Id is:" + myId);
 		if(key > myId && key <= successorId)
 		{
 			return successorId;
 		}
 		else
 		{
-			//ChordInterface precedingNode = closestPrecedingNode(id);
-			//return precedingNode.findSuccessor(key);
+			int precedingNodeId = this.closestPrecedingNode(key);
+			if(precedingNodeId != myId)
+			{
+				if(precedingNodeId!= -1)
+				{
+					try
+					{
+						
+						ChordInterface precedingNode =(ChordInterface) Naming.lookup("//127.0.0.1/"+precedingNodeId);
+						return precedingNode.findSuccessor(key);
+					}
+					catch(Exception e)
+					{
+						System.err.println("error in find Successor!");
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 
 		return successorId;
+	}
+
+	/**
+	 * Finds the closest Preceding Node for the given Id
+	 * @param  id [description]
+	 * @return    [description]
+	 */
+	public int closestPrecedingNode(int id) 
+	{
+		if(fingerList.size()==0)
+		{
+			return -1;
+		}
+
+		for(int index=Utilities.m;index>=1;index--)
+		{
+			System.err.println("index:" + index + "for id:"+id);
+			try
+			{
+				int value = fingerList.get(index);
+				if(Utilities.checkRange(id,myId,value))
+				{
+					System.err.println("val retu" + value);
+					return value;
+				}
+			}
+			catch(IndexOutOfBoundsException e)
+			{
+				continue;
+			}
+		}
+
+		System.err.println("my Id returned");
+
+		return myId;
 	}
 
 	/*End chord functions*/
@@ -93,20 +189,21 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		this.predecessorId = id;
 	}
 
-
-
-	public int predecessorId;
-	public int successorId;
-	public ConcurrentHashMap<String,String> FingerTable;
-	public int myId;
-	public static final int rmiRegistryPort = 5000;
-	public ChordInterface firstNode;
-
+	public ArrayList<Integer> getFingerList() throws RemoteException
+	{
+		return this.fingerList;
+	}
 
 	public Node(String id) throws RemoteException
 	{
 		myId = Integer.parseInt(id);
 		System.out.println("Node Initialized");
+		fingerTable = new ConcurrentHashMap<Integer,Integer>();
+		fingerList = new ArrayList<Integer>();
+		successorList = new ArrayList<Integer>();
+		stabilizeThread = new Thread(new StabilizationThread(this));
+		fixFingersThread = new Thread(new FixFingersThread(this));
+
 	}
 
 	/**
@@ -215,11 +312,21 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 			}
 
-			//  join the ring
-			
 
 		}	
 
 
+		while(true)
+		{
+			try{
+			Thread.sleep(10000);
+			System.out.println("My successor is:" + thisNode.getSuccessorId());
+			System.out.println("My predecessor is:" + thisNode.getPredecessorId());
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }

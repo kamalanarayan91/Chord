@@ -1,4 +1,4 @@
-all: Node.class 
+all:Utilities.class Node.class FixFingersThread.class StabilizationThread.class 
 
 %.class: %.java
 	javac $<
