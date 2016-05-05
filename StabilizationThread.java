@@ -27,6 +27,7 @@ public class StabilizationThread implements Runnable
 				Thread.sleep(Utilities.stabilizationTimeout);
 				System.out.println("Stabilize Thread:");
 
+				ArrayList<Integer> fList = node.getFingerList();
 				
 				if(node.getSuccessorId() == node.getId()) // Bootstrap node case
 				{
@@ -39,7 +40,7 @@ public class StabilizationThread implements Runnable
 						successor.notify(node);
 						
 
-						ArrayList<Integer> fList = node.getFingerList();
+						
 
 						synchronized(fList)
 						{
@@ -65,10 +66,55 @@ public class StabilizationThread implements Runnable
 					System.out.println("Stabilize Thread: Successor:" + successor.getId());
 					System.out.println("Stabilize Thread: Suc-Predecessor:"+ successorPredecessorId);
 
+					int nodeId = node.getId();
+					int nsId = node.getSuccessorId();
+
+
+					// 1->3 -> 2  comes case
 					if(Utilities.checkRange(successorPredecessorId,node.getId(),node.getSuccessorId()) == true)
 					{
+						System.out.println("Stabilize Thread: True");
+						node.setSuccessorId(successorPredecessorId);
 						ChordInterface successorPredecessor = (ChordInterface) Naming.lookup("//127.0.0.1/"+ node.getSuccessorId());
 						successorPredecessor.notify(node);
+						
+
+						synchronized(fList)
+						{
+							
+							if(fList.size() == 1)
+							{
+								fList.add(1 , node.getSuccessorId() );
+							}
+							else
+							{
+								fList.set(1 , node.getSuccessorId());
+							}	
+						}
+					}
+					else if(successorPredecessorId > nodeId )// 1->2 3 comes  case
+					{
+						System.out.println("Stabilize Thread: False");
+						node.setSuccessorId(successorPredecessorId);
+						ChordInterface successorPredecessor = (ChordInterface) Naming.lookup("//127.0.0.1/"+ node.getSuccessorId());
+						successorPredecessor.notify(node);
+
+						synchronized(fList)
+						{
+							
+							if(fList.size() == 1)
+							{
+								fList.add(1 , node.getSuccessorId() );
+							}
+							else
+							{
+								fList.set(1 , node.getSuccessorId());
+							}	
+						}
+					}
+					else if( successorPredecessorId == nodeId )
+					{
+						System.out.println("Stabilize Thread: WTF!");
 					}
 				}
 			}

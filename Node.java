@@ -29,6 +29,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 	public Thread stabilizeThread;
 	public Thread fixFingersThread;
 
+	public boolean isBootStrap = false;
 
 
 	/*Start Chord functions*/
@@ -41,14 +42,39 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		fingerTable.put(0,myId);
 		fingerList.add(0,myId);
 		stabilizeThread.start();
+		this.isBootStrap = true;
 	}
 
+	// Find predecessor's successor and assign it as successor.
 	public void join(ChordInterface anotherNode) throws RemoteException
 	{
+		this.isBootStrap = false;
 		System.out.println("Join called!");
 		this.predecessorId = -1;
-		System.out.println(anotherNode.getSuccessorId());
-		this.successorId = anotherNode.findSuccessor(this.myId);
+
+		//this.successorId = anotherNode.findSuccessor(this.myId);
+		//
+		int tempVal = anotherNode.findSuccessor(this.myId);
+		System.out.println("tempVAl:"+tempVal);
+
+		// a->b c comes case
+		if(tempVal < myId)
+		{
+			try
+			{
+				ChordInterface predecessorNode= (ChordInterface) Naming.lookup("//127.0.0.1/"+tempVal);
+				this.successorId = predecessorNode.getSuccessorId();
+			}
+			catch(Exception e){
+
+			}
+
+
+		}
+		else // a->c b comes case
+		{
+			this.successorId = tempVal;
+		}
 
 		System.out.println("My Successor through join is:" + this.successorId);
 		//notify the node that this is the predecessor.
@@ -56,8 +82,17 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		this.fingerList.add(0,myId);
 		this.fingerList.add(1,successorId);
 
-		anotherNode.notify(this);
+//		anotherNode.notify(this);
+		try
+		{
+			ChordInterface successorNode= (ChordInterface) Naming.lookup("//127.0.0.1/"+this.successorId);
+			successorNode.notify(this);
 
+		}
+		catch(Exception e)
+		{
+			System.err.println("Error in calling notify");
+		}
 		stabilizeThread.start();
 	}
 
@@ -122,8 +157,13 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 					}
 				}
 			}
+			else if(precedingNodeId == myId)
+			{
+				return myId;
+			}
 		}
 
+		//never happens
 		return successorId;
 	}
 
@@ -139,17 +179,24 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			return -1;
 		}
 
+		System.out.println("FingerList size:" + fingerList.size());
+
 		for(int index=Utilities.m;index>=1;index--)
 		{
-			System.err.println("index:" + index + "for id:"+id);
+			
 			try
 			{
+
 				int value = fingerList.get(index);
-				if(Utilities.checkRange(id,myId,value))
+				System.err.println("index:" + index + " for value:"+value);
+				if(Utilities.checkRange(value,myId,id))
 				{
-					System.err.println("val retu" + value);
+					System.err.println("val retu:  " + value);
 					return value;
 				}
+				/*else if () {
+					
+				}*/
 			}
 			catch(IndexOutOfBoundsException e)
 			{
@@ -280,6 +327,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		{
 			//true;
 			thisNode.firstNode = thisNode;
+
 			//create the chord ring.
 			try
 			{
@@ -318,10 +366,11 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 		while(true)
 		{
-			try{
-			Thread.sleep(10000);
-			System.out.println("My successor is:" + thisNode.getSuccessorId());
-			System.out.println("My predecessor is:" + thisNode.getPredecessorId());
+			try
+			{
+				Thread.sleep(10000);
+				System.out.println("My successor is:" + thisNode.getSuccessorId());
+				System.out.println("My predecessor is:" + thisNode.getPredecessorId());
 			}
 			catch(Exception e)
 			{

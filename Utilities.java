@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Utilities
 {
-	public static final int stabilizationTimeout = 10000;// every one second
+	public static final int stabilizationTimeout = 2000;// every one second
 	public static final int fixFingersTimeout = 1000;// every second
 	public static final int totalNodes = 8;	
 	public static final int m = 3; // 2 ^ 3
