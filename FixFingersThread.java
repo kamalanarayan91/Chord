@@ -10,47 +10,75 @@ import java.util.concurrent.*;
 public class FixFingersThread implements Runnable
 {
 	public ChordInterface thisNode;
-	public AtomicInteger next;
+	public int next;
 
 	FixFingersThread(ChordInterface thisNode)
 	{
 		this.thisNode = thisNode;
-		next = new AtomicInteger(0);
+		this.next = 0;
 	}
 
 	@Override
 	public void run()
 	{
-		try{
-		Thread.sleep(Utilities.fixFingersTimeout);
-
-		int nextInt = next.incrementAndGet();
-		if(nextInt > Utilities.m )
+		while(true)
 		{
-			next.set(0);
-		}
-
-			int fingerId = thisNode.getId() +  (int)Math.pow(2, nextInt - 1);
-		//	thisNode.getFingerList().put(nextInt, thisNode.findSuccessor(fingerId));
-			ArrayList<Integer> fList = thisNode.getFingerList();
-
-			synchronized(fList)
+			try
 			{
-				System.err.println("fListSize:" + fList.size());
-				System.err.println("nextInt:"+ nextInt);
-				if(fList.size() == nextInt)
+				Thread.sleep(Utilities.fixFingersTimeout);
+				synchronized(thisNode.getLock())
 				{
-					fList.add(nextInt , thisNode.findSuccessor(fingerId) );
+					next = next + 1;
+
+					if(next > Utilities.m)
+					{
+						next = 1;
+					}
+
+					int fingerId = thisNode.getId() +  (int)Math.pow(2, next- 1) ;
+					
+					fingerId = fingerId % Utilities.totalNodes;
+				
+					ArrayList<Integer> fList = thisNode.getFingerList();
+					int newNode = thisNode.findSuccessor(fingerId);
+
+					System.out.println("next:"+next + " fingerId:"+fingerId +" newVal:"+newNode);
+
+					synchronized(fList)
+					{
+						
+						if(fList.size() == next && newNode!=thisNode.getId())
+						{
+
+							//System.out.println("next:"+next + " fingerId:"+fingerId +" newVal:"+newNode);
+							fList.add(next ,  newNode);
+						}
+						else
+						{
+
+							if(fList.size() > next )
+							{
+
+								if(newNode != fList.get(next) && newNode != thisNode.getId())
+								{
+							//		System.out.println("next:"+next+ " fingerId:"+fingerId  + " newVal:"+newNode);
+									fList.set(next,newNode);
+								}
+							}
+							
+						}
+
+					}
 				}
-				else
-				{
-					fList.set(nextInt,thisNode.findSuccessor(fingerId));
-				}	
+
+				//System.err.println("fListSize:" + fList.size());
+
+
 			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -19,7 +19,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 	public ConcurrentHashMap<Integer,Integer> fingerTable;
 	public ArrayList<String> fileList;
-
+	public Object lock = new Object();
 	public ArrayList<Integer> successorList;
 	public ArrayList<Integer> fingerList; // 0 contains self, 1- immediate 2,3 .. next entries.
 
@@ -30,6 +30,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 	public Thread fixFingersThread;
 
 	public boolean isBootStrap = false;
+	public ArrayList<Integer> responsibleKeys;
 
 
 	/*Start Chord functions*/
@@ -42,7 +43,14 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		fingerTable.put(0,myId);
 		fingerList.add(0,myId);
 		stabilizeThread.start();
+		fixFingersThread.start();
 		this.isBootStrap = true;
+		responsibleKeys();
+	}
+
+	public Object getLock() throws RemoteException
+	{
+		return this.lock;
 	}
 
 	// Find predecessor's successor and assign it as successor.
@@ -65,10 +73,10 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 				ChordInterface predecessorNode= (ChordInterface) Naming.lookup("//127.0.0.1/"+tempVal);
 				this.successorId = predecessorNode.getSuccessorId();
 			}
-			catch(Exception e){
+			catch(Exception e)
+			{
 
 			}
-
 
 		}
 		else // a->c b comes case
@@ -76,13 +84,15 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			this.successorId = tempVal;
 		}
 
+		this.successorId = tempVal;
+
 		System.out.println("My Successor through join is:" + this.successorId);
 		//notify the node that this is the predecessor.
 		this.fingerTable.put(0,myId);
 		this.fingerList.add(0,myId);
 		this.fingerList.add(1,successorId);
 
-//		anotherNode.notify(this);
+
 		try
 		{
 			ChordInterface successorNode= (ChordInterface) Naming.lookup("//127.0.0.1/"+this.successorId);
@@ -94,6 +104,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			System.err.println("Error in calling notify");
 		}
 		stabilizeThread.start();
+		fixFingersThread.start();
 	}
 
 	public void notify(ChordInterface possiblePredecessorNode) throws RemoteException
@@ -104,20 +115,47 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		{
 			predecessorId = possiblePredecessorNode.getId();
 			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
+			responsibleKeys();
+
+
 		}
 		else if( possiblePredecessorNode.getId() > this.predecessorId && possiblePredecessorNode.getId()  < this.myId )
 		{
 			predecessorId = possiblePredecessorNode.getId();
 			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
+			responsibleKeys();
 		}
 		else if(possiblePredecessorNode.getId() > this.myId && possiblePredecessorNode.getId() > this.successorId)
 		{
 			predecessorId = possiblePredecessorNode.getId();
 			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
+			responsibleKeys();
 		}
 
 	}
 
+	public void responsibleKeys()
+	{
+		synchronized(responsibleKeys)
+		{
+			responsibleKeys.clear();
+
+			for(int i=predecessorId+1;;i++)
+			{
+				
+				if(i%Utilities.totalNodes== myId)
+				{
+					responsibleKeys.add(i%Utilities.totalNodes);
+					break;
+				}
+
+				responsibleKeys.add(i%Utilities.totalNodes);
+			}
+
+		}
+		
+		
+	}
 	
 	public void checkPredecessor() throws RemoteException
 	{
@@ -128,21 +166,161 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 	}
 
+	public ArrayList<Integer> keysInCharge2()
+	{
+		ArrayList<Integer> result  = new ArrayList<Integer>();
+		if(predecessorId!=-1)
+		{
+
+			for(int index=predecessorId+1; (index%Utilities.totalNodes) <= myId; index++)
+			{
+				//System.out.println(index);
+				//System.out.println("mod:"+ index%Utilities.totalNodes);
+				result.add(index%Utilities.totalNodes);
+				if(index%Utilities.totalNodes == myId)
+				{
+					return result;
+				}
+			}
+			
+		}
+
+
+
+		return null;	
+	}
+
+	public ArrayList<Integer> keysInCharge()
+	{
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(int index=myId+1; (index%Utilities.totalNodes) <= successorId; index++)
+		{
+			
+			result.add(index%Utilities.totalNodes);
+			if(index%Utilities.totalNodes == successorId)
+			{
+				break;
+			}
+		}
+
+
+		return result;
+	}	
 
 	public int findSuccessor(int key) throws RemoteException
 	{
-		System.out.println("finding successor for:" + key);
-		System.out.println("my Id is:" + myId);
+
+		//System.out.println("finding successor for:" + key);
+		ArrayList<Integer> result = new ArrayList<Integer>();
+
+		synchronized(responsibleKeys)
+		{
+			if(responsibleKeys.contains(key))
+			{
+				return myId;
+			}
+		}
+
+		if(successorId == predecessorId)
+		{
+			if(myId > successorId)
+			{
+				//4 - 0
+				for(int index=myId+1; (index%Utilities.totalNodes) >= successorId; index++ )
+				{
+					result.add(index%Utilities.totalNodes);
+					if(index%Utilities.totalNodes == successorId)
+					{
+						break;
+					}
+				}
+
+				if(result.contains(key)==true)
+				{
+					//System.err.println("Case1: SuccId:" + successorId);
+					return successorId;
+				}
+
+				// 0 - 4
+				for(int index=successorId+1; (index%Utilities.totalNodes) <= myId; index++)
+				{
+					result.add(index%Utilities.totalNodes);
+					if(index%Utilities.totalNodes == myId)
+					{
+						break;
+					}	
+				}
+
+				if(result.contains(key)==true)
+				{
+					//System.err.println("Case1: myId:" + myId);
+					return myId;
+				}
+			}
+			else
+			{
+				
+				for(int index=myId+1; (index%Utilities.totalNodes) <= successorId; index++ )
+				{
+					result.add(index%Utilities.totalNodes);
+					if(index%Utilities.totalNodes == successorId)
+					{
+						break;
+					}
+				}
+
+				if(result.contains(key)==true)
+				{
+					//System.out.println("Case2: successorId:" + successorId);
+					return successorId;
+				}
+
+				// 0 - 4
+				for(int index=successorId+1; (index%Utilities.totalNodes) >= myId; index++)
+				{
+					result.add(index%Utilities.totalNodes);
+					if(index%Utilities.totalNodes == myId)
+					{
+						break;
+					}	
+				}
+
+				if(result.contains(key)==true)
+				{
+					//System.out.println("Case2: myId:" + myId);
+					return myId;
+				}
+
+
+			}
+		}
+
 		if(key > myId && key <= successorId)
 		{
+			//System.out.println("successorId returned"+ successorId);
 			return successorId;
 		}
-		else
+		/*else if(successorId != myId && keysInCharge().contains(key)== true)
 		{
+			
+				return successorId;
+
+		}*/
+		ArrayList<Integer> result2 = new ArrayList<Integer>();
+		if((result2 = keysInCharge2()) !=null)
+		{
+			if(result2.contains(key)== true)
+			{
+				System.out.println("Contains.HOW?");
+				return myId;
+			}
+		}
+		
 			int precedingNodeId = this.closestPrecedingNode(key);
+			//System.out.println("psNOde:"+precedingNodeId);
 			if(precedingNodeId != myId)
 			{
-				if(precedingNodeId!= -1)
+				if(precedingNodeId != -1)
 				{
 					try
 					{
@@ -161,7 +339,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			{
 				return myId;
 			}
-		}
+		
 
 		//never happens
 		return successorId;
@@ -174,37 +352,47 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 	 */
 	public int closestPrecedingNode(int id) 
 	{
-		if(fingerList.size()==0)
+		synchronized(fingerList)
 		{
-			return -1;
-		}
-
-		System.out.println("FingerList size:" + fingerList.size());
-
-		for(int index=Utilities.m;index>=1;index--)
-		{
-			
-			try
+			if(fingerList.size()==0)
 			{
+				return -1;
+			}
 
-				int value = fingerList.get(index);
-				System.err.println("index:" + index + " for value:"+value);
-				if(Utilities.checkRange(value,myId,id))
+		//	System.out.println("FingerList size:" + fingerList.size());
+
+			for(int index=Utilities.m;index>=1;index--)
+			{
+				
+				try
 				{
-					System.err.println("val retu:  " + value);
-					return value;
-				}
-				/*else if () {
+
+					int value = fingerList.get(index);
+					//System.err.println("index:" + index + " for value:"+value);
+					if(Utilities.checkRange(value,myId,id))
+					{
+					//	System.err.println("val retu1:  " + value);
+						return value;
+					}
+					else if( id < myId && id <= predecessorId)  // 7- 0 case
+					{
+					//	System.err.println("val retu2:  " + value);
+						return value;
+					}
+					else if(value<id)
+					{
+						return value;
+					}
 					
-				}*/
-			}
-			catch(IndexOutOfBoundsException e)
-			{
-				continue;
+				}
+				catch(IndexOutOfBoundsException e)
+				{
+					continue;
+				}
 			}
 		}
 
-		System.err.println("my Id returned");
+		//System.err.println("my Id returned");
 
 		return myId;
 	}
@@ -250,6 +438,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		successorList = new ArrayList<Integer>();
 		stabilizeThread = new Thread(new StabilizationThread(this));
 		fixFingersThread = new Thread(new FixFingersThread(this));
+		responsibleKeys = new ArrayList<Integer>();
 
 	}
 
@@ -369,8 +558,9 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			try
 			{
 				Thread.sleep(10000);
-				System.out.println("My successor is:" + thisNode.getSuccessorId());
-				System.out.println("My predecessor is:" + thisNode.getPredecessorId());
+				//System.out.println("My successor is:" + thisNode.getSuccessorId());
+				//System.out.println("My predecessor is:" + thisNode.getPredecessorId());
+				System.out.println("RK::: "+ thisNode.responsibleKeys);
 			}
 			catch(Exception e)
 			{

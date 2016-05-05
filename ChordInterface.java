@@ -21,4 +21,5 @@ public interface ChordInterface extends Remote
 	public int getSuccessorId() throws RemoteException;
 	public int findSuccessor(int key) throws RemoteException;
 	public ArrayList<Integer> getFingerList() throws RemoteException;
+	public Object getLock() throws RemoteException;
 }
