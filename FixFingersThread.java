@@ -42,7 +42,7 @@ public class FixFingersThread implements Runnable
 					ArrayList<Integer> fList = thisNode.getFingerList();
 					int newNode = thisNode.findSuccessor(fingerId);
 
-					System.out.println("next:"+next + " fingerId:"+fingerId +" newVal:"+newNode);
+					//System.out.println("next:"+next + " fingerId:"+fingerId +" newVal:"+newNode);
 
 					synchronized(fList)
 					{
@@ -59,9 +59,9 @@ public class FixFingersThread implements Runnable
 							if(fList.size() > next )
 							{
 
-								if(newNode != fList.get(next) && newNode != thisNode.getId())
+								if( newNode != fList.get(next) && newNode != thisNode.getId())
 								{
-							//		System.out.println("next:"+next+ " fingerId:"+fingerId  + " newVal:"+newNode);
+									//System.out.println("next:"+next+ " fingerId:"+fingerId  + " newVal:"+newNode);
 									fList.set(next,newNode);
 								}
 							}

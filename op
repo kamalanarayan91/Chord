@@ -1,0 +1,490 @@
+Node Initialized
+IsFirstNode:false
+BSNode id 0
+Join called!
+tempVAl:4
+seetSuccessorID:4
+My Successor through join is:4
+notify node called by0
+Predecessor Set!0
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+psNOde:4
+next:2 fingerId:5 newVal:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:0
+psNOde:7
+finding successor for:7
+psNOde:4
+next:3 fingerId:7 newVal:7
+finding successor for:4
+RK::: [1, 2, 3]
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+psNOde:4
+next:2 fingerId:5 newVal:7
+finding successor for:7
+psNOde:4
+next:3 fingerId:7 newVal:7
+finding successor for:4
+RK::: [1, 2, 3]
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+RK::: [1, 2, 3]
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+RK::: [1, 2, 3]
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+RK::: [1, 2, 3]
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+RK::: [1, 2, 3]
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+RK::: [1, 2, 3]
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+RK::: [1, 2, 3]
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+RK::: [1, 2, 3]
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+RK::: [1, 2, 3]
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+RK::: [1, 2, 3]
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+RK::: [1, 2, 3]
+finding successor for:4
+next:1 fingerId:4 newVal:4
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+RK::: [1, 2, 3]
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+RK::: [1, 2, 3]
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
+finding successor for:4
+next:1 fingerId:4 newVal:4
+RK::: [1, 2, 3]
+finding successor for:5
+Node failed! - retrying..4
+psNOde:3
+next:2 fingerId:5 newVal:3
+finding successor for:7
+Node failed! - retrying..4
+psNOde:3
+next:3 fingerId:7 newVal:3
