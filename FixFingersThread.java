@@ -6,7 +6,10 @@ import java.rmi.server.*;
 import java.rmi.registry.*;
 import java.util.concurrent.*;
 
-
+/**
+ * Periodically called so that a node can refresh its finger table
+ * entries.
+ */
 public class FixFingersThread implements Runnable
 {
 	public ChordInterface thisNode;

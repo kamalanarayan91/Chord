@@ -1,8 +1,6 @@
 import java.rmi.*;
 import java.util.*;
 import java.io.*;
-
-
 import java.rmi.server.*;
 import java.rmi.registry.*;
 import java.util.concurrent.*;
@@ -53,56 +51,6 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		responsibleKeys();
 	}
 
-	public ArrayList<Integer> getResponsibleKeys() throws RemoteException
-	{
-		return this.responsibleKeys;
-	}
-	public Object getLock() throws RemoteException
-	{
-		return this.lock;
-	}
-
-	/**
-	 *  Initiate Disconnection;
-	 *  @param  anotherNode
-	 *  @throws RemoteException
-	 */
-	public void disconnect() throws RemoteException
-	{
-		try
-		{
-			ChordInterface predecessorNode = (ChordInterface) Naming.lookup("//127.0.0.1/"+predecessorId);
-			ChordInterface successorNode = (ChordInterface) Naming.lookup("//127.0.0.1/"+successorId);
-
-			//file copy from this folder to successor's folder and then delete.
-			successorNode.notify(predecessorNode);
-			predecessorNode.setSuccessorId(successorId);
-			predecessorNode.updateFingers(myId);
-			
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace(); 
-		}
-	}
-
-	public void updateFingers(int disconnectedNodeId) throws RemoteException
-	{
-		synchronized(fingerList)
-		{
-			for(int i=1;i<fingerList.size();i++)
-			{
-				int val = fingerList.get(i);
-				if(val == disconnectedNodeId)
-				{
-					fingerList.set(i,successorId);
-				}
-			}
-		}
-	}
-
-
 	// Find predecessor's successor and assign it as successor.
 	public void join(ChordInterface anotherNode) throws RemoteException
 	{
@@ -110,23 +58,15 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		System.out.println("Join called!");
 		this.predecessorId = -1;
 
-		//this.successorId = anotherNode.findSuccessor(this.myId);
-		//
 		int tempVal = anotherNode.findSuccessor(this.myId);
-		System.out.println("tempVAl:"+tempVal);
-
-		// a->b c comes case
-		
 
 		this.fingerList.add(0,myId);
 
 		setSuccessorId(tempVal);
 
-		//this.successorId = tempVal;
 
 		System.out.println("My Successor through join is:" + this.successorId);
 
-		//notify the node that this is the predecessor.
 		this.fingerTable.put(0,myId);
 
 		try
@@ -147,6 +87,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 	}
 
+	/*Notify a node about a possible predecessor*/
 	public void notify(ChordInterface possiblePredecessorNode) throws RemoteException
 	{
 		System.out.println("notify node called by" + possiblePredecessorNode.getId());
@@ -155,14 +96,6 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		{
 			predecessorId = possiblePredecessorNode.getId();
 			
-			try
-			{
-				Thread.sleep(5000);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
 			System.out.println("Predecessor Set!" + possiblePredecessorNode.getId());
 			responsibleKeys();
 			try{
@@ -211,7 +144,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		}
 
 	}
-
+	/*Find out which keys a node is responsible for*/
 	public void responsibleKeys()
 	{
 		synchronized(responsibleKeys)
@@ -261,21 +194,6 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 			}
 
-		}
-
-		synchronized(fingerList)
-		{
-			if(fingerKeyList.contains(predecessorId))
-			{
-				int index = fingerKeyList.indexOf(predecessorId);
-
-				index++;
-
-				if(fingerList.size() == index)
-				{
-
-				}
-			}
 		}
 			
 	}
@@ -416,14 +334,14 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 				{
 					
 					ChordInterface precedingNode =(ChordInterface) Naming.lookup("//127.0.0.1/"+precedingNodeId);
-					//System.out.println("recursing:"+precedingNodeId + " for key:"+ key);
 					return precedingNode.findSuccessor(key);
 				}
 				catch(Exception e)
 				{
-					System.exit(-1);
+					
 					System.out.println("error in find Successor!");
 					e.printStackTrace();
+					System.exit(-1);
 				}
 			}
 		}
@@ -496,6 +414,15 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 	}
 
 	/*End chord functions*/
+
+	public ArrayList<Integer> getResponsibleKeys() throws RemoteException
+	{
+		return this.responsibleKeys;
+	}
+	public Object getLock() throws RemoteException
+	{
+		return this.lock;
+	}
 
 	public int getId() throws RemoteException
 	{
@@ -578,7 +505,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		Node thisNode = null;
 		boolean isFirstNode = true;
 
-		if(port<0 || port >8)
+		if(port<0 || port > 8)
 		{
 			System.out.println("Please enter an id number between 0 and 7");
 		}
@@ -637,7 +564,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			//File Services
 			int nodeId = thisNode.getId();
 			File file = new File(Integer.toString(nodeId));
-			System.out.println(file.getAbsolutePath());
+			System.out.println("My Folder is: "+ file.getAbsolutePath());
 
 			if(file.exists()== true)
 			{
@@ -651,7 +578,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			{
 				file.mkdir();
 			}
-			//thisNode.redistributeKeys();
+			
 		} 
 		catch (RemoteException e1)
 		{
@@ -689,7 +616,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 			try
 			{
-				System.out.println("BSNode id "+ thisNode.firstNode.getId());
+				
 				thisNode.join(thisNode.firstNode);
 			}
 			catch(Exception e)
@@ -718,8 +645,6 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 			try
 			{
 				Thread.sleep(10000);
-				//System.out.println("My successor is:" + thisNode.getSuccessorId());
-				//System.out.println("My predecessor is:" + thisNode.getPredecessorId());
 				System.out.println("ResponsibleKeys::: "+ thisNode.responsibleKeys);
 
 				synchronized(thisNode.fingerList)
@@ -749,25 +674,23 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		
 		File file = new File(filesFolder+"/"+fileName);
 		fout =  new FileOutputStream(file);
-		System.out.println("File Writer write "+ fileName);
+
 		if(fout!=null)
 		{
 			return true;
 		}
 		return false;
 		
-		// TODO Auto-generated method stub
-		
 	}
 
 	public boolean uploadFile(String fileName) throws IOException, RemoteException {
-		// TODO Auto-generated method stub
+		
 		File file = new File(filesFolder+"/"+fileName);
 		if(file.exists()&&file.isFile())
 		{
 			fin = new FileInputStream(file);
 		}
-		System.out.println("File Reader Read "+ fileName);
+		//System.out.println("File Reader Read "+ fileName);
 		if(fin!=null)
 		{
 			return true;
@@ -804,7 +727,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		fin.close();
 	}
 	
-	public void moveFiletoNode(String fileName,int NodeId) throws IOException, RemoteException
+	public String moveFiletoNode(String fileName,int NodeId) throws IOException, RemoteException
 	{
 	
 		File file = new File(filesFolder+"/"+fileName);
@@ -813,7 +736,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		try
 		{
 			newNode= (ChordInterface) Naming.lookup("//127.0.0.1/"+NodeId);
-			System.out.println("Node found "+NodeId);
+		//	System.out.println("Node found "+NodeId);
 		}
 		catch(Exception e)
 		{
@@ -860,6 +783,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 
 				newNode.writerClose();
 				readerClose();
+				return "Success!";
 			}
 			catch (IOException e) 
 			{
@@ -872,9 +796,13 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		else
 		{
 			System.out.println("Node/File does not exist");
+
 		}
+
+		return null;
 	}
-		
+
+	/*Distriburte the files across the system*/
 	public void redistributeKeys(int nodeId) throws RemoteException
 	{
 		File Folder = new File(filesFolder);
@@ -894,7 +822,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 		}
 		catch(Exception e)
 		{
-			System.out.println("destinaation node doesn't exist");
+			System.out.println("destination node "+ nodeId +" doesn't exist");
 			return;
 		}
 
@@ -930,7 +858,7 @@ public class Node extends UnicastRemoteObject implements ChordInterface
 				}
 				else
 				{
-					System.out.println("Not Moving file to: "+ file.getName()+" : "+ hash + " to:" + destinationNode.getId());
+					System.out.println("Not Moving file: "+ file.getName()+" with hash : "+ hash + " to:" + destinationNode.getId());
 				}	
 			}
 			

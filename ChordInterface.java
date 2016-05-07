@@ -8,12 +8,10 @@ public interface ChordInterface extends Remote
 	public void create() throws RemoteException;
 	public void join(ChordInterface anotherNode) throws RemoteException;
 	public void notify(ChordInterface possiblePredecessorNode) throws RemoteException;	
-	public void updateFingers(int disconnectedNodeId) throws RemoteException;
-	public void disconnect() throws RemoteException;
 	
 	public void redistributeKeys(int nodeId) throws RemoteException;
 	// File transfer
-	public void moveFiletoNode(String fileName,int NodeId) throws IOException, RemoteException;
+	public String moveFiletoNode(String fileName,int NodeId) throws IOException, RemoteException;
 	public int readFileContent() throws IOException, RemoteException;
 	public boolean writetoDownloadFile(byte[] buffer) throws IOException, RemoteException;
 	public boolean downloadFile(String fileName) throws IOException, RemoteException;
